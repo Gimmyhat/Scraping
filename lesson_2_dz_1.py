@@ -57,7 +57,7 @@ def get_jobs(pages):
 
 if __name__ == '__main__':
     FIND_TEXT = 'Django'  # критерий поиска
-    FIND_ITEMS = 0  # сколько вакансий искать (если 0, то все совпадения)
+    FIND_ITEMS = 70  # сколько вакансий искать (если 0, то все совпадения)
     ITEMS_ON_PAGE = 20
     AREA = 113
     SITE = 'HH.ru'
