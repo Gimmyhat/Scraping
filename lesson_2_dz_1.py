@@ -1,4 +1,6 @@
 import time
+from math import ceil
+
 import fake_useragent
 import pandas as pd
 import requests
@@ -27,9 +29,10 @@ def get_salary(text):
 
 
 # создаем список вакансий по указанному запросу
-def get_jobs(last_page):
+def get_jobs(pages):
     vacancy_list = []
-    for page in tqdm(range(last_page)):  # tqdm библиотека для отображения индикатора прогресса
+    trigger = 0  # ограничивает количество поиска согласно заданному FIND_ITEMS
+    for page in tqdm(range(pages)):  # tqdm библиотека для отображения индикатора прогресса
         resp = requests.get(f'{url}&page={page}', headers=HEADERS)
         soup = BeautifulSoup(resp.text, 'lxml')
         # находим отдельные блоки с вакансиями и выдергиваем нужные данные
@@ -45,12 +48,17 @@ def get_jobs(last_page):
                  'site': 'HH.ru'
                  }
             )
+            trigger += 1
+            # прекращает парсинг, достигнув требуемого количества вакансий (согласно FIND_ITEMS)
+            if trigger == FIND_ITEMS:
+                break
         time.sleep(1)
     return vacancy_list
 
 
 if __name__ == '__main__':
-    FIND_TEXT = 'Django'
+    FIND_TEXT = 'Django'  # критерий поиска
+    FIND_ITEMS = 0  # сколько вакансий искать (если 0, то все совпадения)
     ITEMS_ON_PAGE = 20
     AREA = 113
     SITE = 'HH.ru'
@@ -63,5 +71,6 @@ if __name__ == '__main__':
     url = f'{BASE_URL}?area={AREA}&items_on_page={ITEMS_ON_PAGE}&order_by={ORDER_BY}&text={FIND_TEXT}'
 
     last_page = get_last_page()
-    df = pd.DataFrame(get_jobs(last_page))
-    df.to_excel('./hh.xlsx')
+    pages = last_page if FIND_ITEMS == 0 else ceil(FIND_ITEMS / ITEMS_ON_PAGE)
+    df = pd.DataFrame(get_jobs(pages))
+    df.to_excel(f'./hh_{FIND_ITEMS}.xlsx')
