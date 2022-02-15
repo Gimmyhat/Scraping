@@ -9,10 +9,13 @@ from tqdm import tqdm
 
 # Находим номер последней страницы с вакансиями
 def get_last_page():
-    resp = requests.get(f'{url}&page={0}', headers=HEADERS)
-    soup = BeautifulSoup(resp.text, 'lxml')
-    paginator = soup.find('div', {'class': 'pager'})  # находим блок пагинации
-    return [int(page.find('a').text) for page in paginator if page.find('a')][-1]
+    try:
+        resp = requests.get(f'{url}&page={0}', headers=HEADERS)
+        soup = BeautifulSoup(resp.text, 'lxml')
+        paginator = soup.find('div', {'class': 'pager'})  # находим блок пагинации
+        return [int(page.find('a').text) for page in paginator if page.find('a')][-1]
+    except:
+        return 1
 
 
 # разбиваем текст с данными по зарплате на минимальную и максимальную + тип валюты
@@ -56,8 +59,9 @@ def get_jobs(pages):
 
 
 if __name__ == '__main__':
-    FIND_TEXT = 'Django'  # критерий поиска
-    FIND_ITEMS = 70  # сколько вакансий искать (если 0, то все совпадения)
+
+    FIND_TEXT = input('Введите наименование вакансии: ')  # критерий поиска
+    FIND_ITEMS = int(input('Введите максимальное количество для поиска (0 - будут найдены все вакансии): '))
     ITEMS_ON_PAGE = 20
     AREA = 113
     SITE = 'HH.ru'
