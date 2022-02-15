@@ -10,12 +10,10 @@ import re
 
 # Находим номер последней страницы с вакансиями
 def get_last_page():
-    resp = requests.get(f'{url}&page={0}', headers=HEADERS)
+    resp = requests.get(url, headers=HEADERS)
     soup = BeautifulSoup(resp.text, 'lxml')
-    # находим информацию по результату поиска ('Найдено XXXX вакансий')
-    vacancy_all = soup.find('div', {'class': '_2G0xv _8kBN3 _2Jaon _2X1PV'}).text
-    # преобразуем результат в число и находим количество страниц с результатом запроса
-    return ceil(int(re.search(r'\d+', vacancy_all).group()) // ITEMS_ON_PAGE)
+    paginator = soup.find('div', {'class': '_2G0xv L1p51 bwVVU VsleO e495U _2_kCs _3l5cC'})  # находим блок пагинации
+    return int([page.find('span', {'class': '_1BOkc'}).text for page in paginator.find_all('a')][-2])
 
 
 # разбиваем текст с данными по зарплате на минимальную и максимальную + тип валюты
@@ -67,7 +65,7 @@ def get_jobs(max_page):
 
 if __name__ == '__main__':
     FIND_TEXT = 'python'  # критерий поиска
-    FIND_ITEMS = 100  # сколько вакансий искать (если 0, то все совпадения)
+    FIND_ITEMS = 150  # сколько вакансий искать (если 0, то все совпадения)
     SITE = 'SuperJob.ru'
     ORDER_BY = 'updated_at'
     ITEMS_ON_PAGE = 20
