@@ -30,7 +30,7 @@ def get_news(collection):
 if __name__ == '__main__':
     client = pymongo.MongoClient(CLIENT)  # Подключаемся к MongoDB Atlas
     db = client['lenta']  # база данных
-    lenta_news = db.lenta_news  # основные новости с сайта hh.ru
+    lenta_news = db.lenta_news  # основные новости с сайта lenta.ru
 
     SOURCE = 'Lenta.ru'
     HEADERS = {"User-Agent": UserAgent().chrome}
