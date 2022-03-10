@@ -27,4 +27,7 @@ class LeroymerlinSpider(scrapy.Spider):
         loader.add_xpath('photos', '//picture[@slot="pictures"]//source[contains(@media, "1024px")]/@srcset')
         loader.add_xpath('price', '//span[@slot="price"]//text()')
         loader.add_value('url', response.url)
+        term = loader.get_xpath("//dt[@class='def-list__term']//text()")
+        definition = loader.get_xpath("//dd[@class='def-list__definition']/text ()")
+        loader.add_value('params', dict(zip(term, definition)))
         yield loader.load_item()

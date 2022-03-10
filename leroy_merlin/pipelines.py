@@ -10,6 +10,8 @@ from itemadapter import ItemAdapter
 from scrapy.pipelines.images import ImagesPipeline
 from pymongo import MongoClient
 from db import CLIENT
+import os
+from urllib.parse import urlparse
 
 
 class LeroyMerlinPipeline:
@@ -24,6 +26,11 @@ class LeroyMerlinPipeline:
 
 
 class LeroyMerlinPhotosPipeline(ImagesPipeline):
+
+    # Раскидывает фотографии в папки по названию товара
+    def file_path(self, request, response=None, info=None, *, item=None):
+        return f"{item['url'].split('/')[-2]}/" + os.path.basename(urlparse(request.url).path)
+
     def get_media_requests(self, item, info):
         if item['photos']:
             for photo in item['photos']:
